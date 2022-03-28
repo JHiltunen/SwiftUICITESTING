@@ -9,7 +9,10 @@ on:
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-11
+    runs-on: macos-latest
+    strategy:
+       matrix:
+         destination: ['platform=iOS Simulator,OS=15.0,name=iPhone11']
 
     steps:
       - name: Checkout
@@ -17,7 +20,6 @@ jobs:
       - name: Set Default Scheme
         run: |
           sudo xcode-select --switch /Applications/Xcode_13.0.app/Contents/Developer
-          xcversion simulators --install='iOS 15.0'
           scheme_list=$(xcodebuild -list -json | tr -d "\n")
           default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
           echo $default | cat >default
