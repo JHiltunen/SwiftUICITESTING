@@ -26,4 +26,4 @@ jobs:
           platform: ${{ 'iOS Simulator' }}
         run: |
           xcodebuild clean -project testingSwift.xcodeproj -scheme testingSwift | xcpretty
-          xcodebuild test -project testingSwift.xcodeproj -scheme testingSwift -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.4' | xcpretty -s
+          xcodebuild test -project testingSwift.xcodeproj -scheme testingSwift -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2' | xcpretty -s
