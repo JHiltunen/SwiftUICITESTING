@@ -10,10 +10,7 @@ jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
     runs-on: ubuntu-latest
-    strategy:
-        matrix:
-          destination: ['platform=iOS Simulator,OS=15.0,name=iPhone 11 Pro Max']
-
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,19 +24,13 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
-          destination: ${{ matrix.destination }}
         run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "${destination}" "platform=$platform,name=$device"
+          xcodebuild clean -project MoveSenseApp.xcodeproj -scheme MoveSenseApp | xcpretty
+          xcodebuild test -project MoveSenseApp.xcodeproj -scheme MoveSenseApp -destination 'platform=iOS Simulator,name=iPhone 11,OS=15.4' | xcpretty -s
       - name: Test
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
-          destination: ${{ matrix.destination }}
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
